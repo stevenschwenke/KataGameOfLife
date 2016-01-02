@@ -29,7 +29,8 @@ public class World {
     if (columnMap == null) {
       return false;
     }
-    return columnMap.get(row);
+    Boolean cellLiving = columnMap.get(row);
+    return cellLiving != null && cellLiving;
   }
 
   public int neighbours(int column, int row) {
