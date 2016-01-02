@@ -5,7 +5,7 @@ public class World {
 
   private Map<Integer, Map<Integer, Boolean>> world = new HashMap<>();
 
-  public void createLivingCell(int column, int row) {
+  public void create(int column, int row) {
     Map<Integer, Boolean> columnMap = world.get(column);
     if (columnMap == null) {
       // first living cell in this column
@@ -17,14 +17,14 @@ public class World {
     }
   }
 
-  public void killCell(int column, int row) {
+  public void kill(int column, int row) {
     Map<Integer, Boolean> columnMap = world.get(column);
     if (columnMap != null) {
       columnMap.put(row, Boolean.FALSE);
     }
   }
 
-  public boolean isLivingCell(int column, int row) {
+  public boolean isLiving(int column, int row) {
     Map<Integer, Boolean> columnMap = world.get(column);
     if (columnMap == null) {
       return false;
@@ -32,7 +32,7 @@ public class World {
     return columnMap.get(row);
   }
 
-  public int neighboursFrom(int column, int row) {
+  public int neighbours(int column, int row) {
     int neighbours = 0;
     Map<Integer, Boolean> westColumn = world.get(column-1);
     if(westColumn != null) {
