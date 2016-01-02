@@ -6,29 +6,72 @@ public class World {
   private Map<Integer, Map<Integer, Boolean>> world = new HashMap<>();
 
   public void createLivingCell(int column, int row) {
-    Map<Integer, Boolean> rowMap = world.get(column);
-    if (rowMap == null) {
-      // first living cell in this row
-      rowMap = new HashMap<>();
-      rowMap.put(row, Boolean.TRUE);
-      world.put(column, rowMap);
+    Map<Integer, Boolean> columnMap = world.get(column);
+    if (columnMap == null) {
+      // first living cell in this column
+      columnMap = new HashMap<>();
+      columnMap.put(row, Boolean.TRUE);
+      world.put(column, columnMap);
     } else {
-      rowMap.put(row, Boolean.TRUE);
+      columnMap.put(row, Boolean.TRUE);
     }
   }
 
   public void killCell(int column, int row) {
-    Map<Integer, Boolean> rowMap = world.get(column);
-    if (rowMap != null) {
-      rowMap.put(row, Boolean.FALSE);
+    Map<Integer, Boolean> columnMap = world.get(column);
+    if (columnMap != null) {
+      columnMap.put(row, Boolean.FALSE);
     }
   }
 
   public boolean isLivingCell(int column, int row) {
-    Map<Integer, Boolean> rowMap = world.get(column);
-    if (rowMap == null) {
+    Map<Integer, Boolean> columnMap = world.get(column);
+    if (columnMap == null) {
       return false;
     }
-    return rowMap.get(row);
+    return columnMap.get(row);
+  }
+
+  public int neighboursFrom(int column, int row) {
+    int neighbours = 0;
+    Map<Integer, Boolean> westColumn = world.get(column-1);
+    if(westColumn != null) {
+      Boolean northWest = westColumn.get(row - 1);
+      Boolean west = westColumn.get(row);
+      Boolean southWest = westColumn.get(row + 1);
+
+      if(northWest != null && northWest)
+        neighbours ++;
+      if(west != null && west)
+        neighbours ++;
+      if(southWest != null && southWest)
+        neighbours ++;
+    }
+
+    Map<Integer, Boolean> centerColumn = world.get(column);
+    if(centerColumn != null) {
+      Boolean north = centerColumn.get(row - 1);
+      Boolean south = centerColumn.get(row + 1);
+
+      if(north != null && north)
+        neighbours ++;
+      if(south != null && south)
+        neighbours ++;
+    }
+
+    Map<Integer, Boolean> eastColumn = world.get(column+1);
+    if(eastColumn != null) {
+      Boolean northEast = eastColumn.get(row - 1);
+      Boolean east = eastColumn.get(row);
+      Boolean southEast = eastColumn.get(row + 1);
+
+      if(northEast != null && northEast)
+        neighbours ++;
+      if(east != null && east)
+        neighbours ++;
+      if(southEast != null && southEast)
+        neighbours ++;
+    }
+    return neighbours;
   }
 }
