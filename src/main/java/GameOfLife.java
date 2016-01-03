@@ -90,7 +90,21 @@ public class GameOfLife extends Application {
       world.create(column, row+2);
       displayCellAsLiving(column, row+2);
     });
-    contextMenu.getItems().addAll(blinker);
+
+    MenuItem glider = new MenuItem("Glider");
+    glider.setOnAction(e -> {
+      world.create(column +1, row);
+      displayCellAsLiving(column+1, row);
+      world.create(column+2, row+1);
+      displayCellAsLiving(column+2, row+1);
+      world.create(column, row+2);
+      displayCellAsLiving(column, row+2);
+      world.create(column+1, row+2);
+      displayCellAsLiving(column+1, row+2);
+      world.create(column+2, row+2);
+      displayCellAsLiving(column+2, row+2);
+    });
+    contextMenu.getItems().addAll(blinker, glider);
     button.setContextMenu(contextMenu);
     return button;
   }
