@@ -1,32 +1,21 @@
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class GameOfLife extends Application {
 
-  public static final int COLUMNS = 10;
-  public static final int ROWS = 10;
+  public static final int COLUMNS = 20;
+  public static final int ROWS = 20;
   private World world = new World();
 
   private GridPane gridPane = new GridPane();
@@ -38,7 +27,6 @@ public class GameOfLife extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    gridPane.setGridLinesVisible(true);
     BorderPane borderPane = new BorderPane(gridPane);
     Button nextRoundButton = new Button("Next round");
     nextRoundButton.setOnAction(e -> computeNextRound());
