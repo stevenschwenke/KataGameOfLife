@@ -2,14 +2,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class GameOfLife extends Application {
@@ -30,7 +36,25 @@ public class GameOfLife extends Application {
     BorderPane borderPane = new BorderPane(gridPane);
     Button nextRoundButton = new Button("Next round");
     nextRoundButton.setOnAction(e -> computeNextRound());
-    borderPane.setTop(nextRoundButton);
+    Button playButton = new Button("Play");
+    playButton.setOnAction(e -> {
+      ExecutorService executor = Executors.newFixedThreadPool(1);
+      if("Play".equals(playButton.getText())) {
+        playButton.setText("Stop");
+      } else {
+        playButton.setText("Play");
+      }
+
+      Callable<Object> myCallable = () -> {
+          while (playButton.getText().equals("Stop")) {
+              Thread.sleep(700);
+              GameOfLife.this.computeNextRound();
+          }
+          return null;
+        };
+        executor.submit(myCallable);
+    });
+    borderPane.setTop(new HBox(3d, nextRoundButton, playButton));
     Scene scene = new Scene(borderPane, 500, 500);
 
     for (int column = 0; column <= COLUMNS; column++) {
