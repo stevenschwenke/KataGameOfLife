@@ -5,10 +5,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -24,16 +22,23 @@ public class GameOfLife extends Application {
   public static final int ROWS = 20;
   private World world = new World();
 
-  private GridPane gridPane = new GridPane();
   private Map<Integer, Map<Integer, Button>> buttonMap = new HashMap<>();
-
-  public static void main(String[] args) {
-    launch(args);
-  }
 
   @Override
   public void start(Stage stage) throws Exception {
+    GridPane gridPane = new GridPane();
     BorderPane borderPane = new BorderPane(gridPane);
+    Scene scene = new Scene(borderPane, 500, 500);
+
+    createControlButtons(borderPane);
+    initializeGameField(gridPane);
+
+    stage.setTitle("Game of Life");
+    stage.setScene(scene);
+    stage.show();
+  }
+
+  private void createControlButtons(BorderPane borderPane) {
     Button nextRoundButton = new Button("Next round");
     nextRoundButton.setOnAction(e -> computeNextRound());
     Button playButton = new Button("Play");
@@ -55,11 +60,12 @@ public class GameOfLife extends Application {
         executor.submit(myCallable);
     });
     borderPane.setTop(new HBox(3d, nextRoundButton, playButton));
-    Scene scene = new Scene(borderPane, 500, 500);
+  }
 
+  private void initializeGameField(GridPane gridPane) {
     for (int column = 0; column <= COLUMNS; column++) {
       for (int row = 0; row <= ROWS; row++) {
-        Button button = makeButton(column, row);
+        Button button = makeGamefieldButton(column, row);
         gridPane.add(button, column, row);
         if (buttonMap.get(column) != null) {
           buttonMap.get(column).put(row, button);
@@ -70,13 +76,9 @@ public class GameOfLife extends Application {
         }
       }
     }
-
-    stage.setTitle("Game of Life");
-    stage.setScene(scene);
-    stage.show();
   }
 
-  private Button makeButton(int column, int row) {
+  private Button makeGamefieldButton(int column, int row) {
     Button button = new Button();
     final int finalRow = row;
     final int finalColumn = column;
@@ -92,6 +94,11 @@ public class GameOfLife extends Application {
       }
 
     });
+    button.setContextMenu(createContextMenu(column, row));
+    return button;
+  }
+
+  private ContextMenu createContextMenu(int column, int row) {
     ContextMenu contextMenu = new ContextMenu();
     MenuItem blinker = new MenuItem("Blinker");
     blinker.setOnAction(e -> {
@@ -117,8 +124,7 @@ public class GameOfLife extends Application {
       displayCellAsLiving(column+2, row+2);
     });
     contextMenu.getItems().addAll(blinker, glider);
-    button.setContextMenu(contextMenu);
-    return button;
+    return contextMenu;
   }
 
   private void computeNextRound() {
@@ -142,7 +148,6 @@ public class GameOfLife extends Application {
           cellsToCreate.add(new Cell(column,row));
           displayCellAsLiving(column, row);
         }
-
       }
     }
 
@@ -169,5 +174,4 @@ public class GameOfLife extends Application {
       this.row = row;
     }
   }
-
 }
