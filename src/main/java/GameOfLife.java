@@ -51,7 +51,7 @@ public class GameOfLife extends Application {
           boolean living = world.isLiving(finalColumn, finalRow);
           if (living) {
             world.kill(finalColumn, finalRow);
-            button.setStyle("-fx-background-color: #ff5b49");
+            button.setStyle(null);
           } else {
             world.create(finalColumn, finalRow);
             button.setStyle("-fx-background-color: #3635ff");
@@ -88,7 +88,7 @@ public class GameOfLife extends Application {
             .isUnderpopulated(neighbours))) {
           cellsToKill.add(new Cell(column,row));
           Button button = buttonMap.get(column).get(row);
-          button.setStyle("-fx-background-color: #ff5b49");
+          button.setStyle(null);
           continue;
         }
         if (!living && GameLogic.isReproducing(neighbours)) {
