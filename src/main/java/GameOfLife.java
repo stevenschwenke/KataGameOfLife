@@ -7,12 +7,16 @@ import java.util.ResourceBundle;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -43,21 +47,7 @@ public class GameOfLife extends Application {
 
     for (int column = 0; column <= COLUMNS; column++) {
       for (int row = 0; row <= ROWS; row++) {
-        Button button = new Button();
-        final int finalRow = row;
-        final int finalColumn = column;
-        button.setOnAction(e -> {
-          System.out.println(finalColumn + ", " + finalRow);
-          boolean living = world.isLiving(finalColumn, finalRow);
-          if (living) {
-            world.kill(finalColumn, finalRow);
-            button.setStyle(null);
-          } else {
-            world.create(finalColumn, finalRow);
-            button.setStyle("-fx-background-color: #3635ff");
-          }
-
-        });
+        Button button = makeButton(column, row);
         gridPane.add(button, column, row);
         if (buttonMap.get(column) != null) {
           buttonMap.get(column).put(row, button);
@@ -72,6 +62,37 @@ public class GameOfLife extends Application {
     stage.setTitle("Game of Life");
     stage.setScene(scene);
     stage.show();
+  }
+
+  private Button makeButton(int column, int row) {
+    Button button = new Button();
+    final int finalRow = row;
+    final int finalColumn = column;
+    button.setOnAction(e -> {
+      System.out.println(finalColumn + ", " + finalRow);
+      boolean living = world.isLiving(finalColumn, finalRow);
+      if (living) {
+        world.kill(finalColumn, finalRow);
+        button.setStyle(null);
+      } else {
+        world.create(finalColumn, finalRow);
+        button.setStyle("-fx-background-color: #3635ff");
+      }
+
+    });
+    ContextMenu contextMenu = new ContextMenu();
+    MenuItem blinker = new MenuItem("Blinker");
+    blinker.setOnAction(e -> {
+      world.create(column, row);
+      displayCellAsLiving(column, row);
+      world.create(column, row+1);
+      displayCellAsLiving(column, row+1);
+      world.create(column, row+2);
+      displayCellAsLiving(column, row+2);
+    });
+    contextMenu.getItems().addAll(blinker);
+    button.setContextMenu(contextMenu);
+    return button;
   }
 
   private void computeNextRound() {
@@ -93,9 +114,7 @@ public class GameOfLife extends Application {
         }
         if (!living && GameLogic.isReproducing(neighbours)) {
           cellsToCreate.add(new Cell(column,row));
-          Button button = buttonMap.get(column).get(row);
-
-          button.setStyle("-fx-background-color: #3635ff");
+          displayCellAsLiving(column, row);
         }
 
       }
@@ -108,6 +127,11 @@ public class GameOfLife extends Application {
     for(Cell cellToKill : cellsToKill) {
       world.kill(cellToKill.column, cellToKill.row);
     }
+  }
+
+  private void displayCellAsLiving(int column, int row) {
+    Button button = buttonMap.get(column).get(row);
+    button.setStyle("-fx-background-color: #3635ff");
   }
 
   private class Cell {
