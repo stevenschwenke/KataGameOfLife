@@ -6,29 +6,18 @@ public class World {
   private Map<Integer, Map<Integer, Boolean>> world = new HashMap<>();
 
   public void create(int column, int row) {
-    Map<Integer, Boolean> columnMap = world.get(column);
-    if (columnMap == null) {
-      // first living cell in this column
-      columnMap = new HashMap<>();
-      columnMap.put(row, Boolean.TRUE);
-      world.put(column, columnMap);
-    } else {
-      columnMap.put(row, Boolean.TRUE);
-    }
+    Map<Integer, Boolean> columnMap = world.get(column) != null? world.get(column) : new HashMap<>();
+    world.put(column, columnMap != null ? columnMap : new HashMap<>());
+    columnMap.put(row, Boolean.TRUE);
   }
 
   public void kill(int column, int row) {
-    Map<Integer, Boolean> columnMap = world.get(column);
-    if (columnMap != null) {
-      columnMap.put(row, Boolean.FALSE);
-    }
+    Map<Integer, Boolean> columnMap = world.get(column) != null ? world.get(column) : new HashMap<>();
+    columnMap.put(row, Boolean.FALSE);
   }
 
   public boolean isLiving(int column, int row) {
-    Map<Integer, Boolean> columnMap = world.get(column);
-    if (columnMap == null) {
-      return false;
-    }
+    Map<Integer, Boolean> columnMap = world.get(column) != null ? world.get(column) : new HashMap<>();
     Boolean cellLiving = columnMap.get(row);
     return cellLiving != null && cellLiving;
   }
