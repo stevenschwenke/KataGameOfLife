@@ -1,8 +1,41 @@
+import org.apache.commons.collections4.Factory;
+import org.apache.commons.collections4.map.LazyMap;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
 public class WorldTest {
+
+  /**
+   * This tests the world which is implemented using a LazyMap.
+   */
+  @Test
+  public void lazyMapTest() {
+    Factory<Boolean> factory1 = new Factory<Boolean>() {
+      public Boolean create() {
+        return Boolean.FALSE;
+      }
+    };
+    Map<Integer, Boolean> innerMap = LazyMap.lazyMap(new HashMap<Integer, Boolean>(), factory1);
+
+    Factory<LazyMap<Integer, Boolean>> factory2 = new Factory<LazyMap<Integer, Boolean>>() {
+      @Override
+      public LazyMap<Integer, Boolean> create() {
+        return LazyMap.lazyMap(new HashMap<Integer, Boolean>(), factory1);
+      }
+    };
+    Map<Integer, LazyMap<Integer, Boolean>> outerMap = LazyMap.lazyMap(new HashMap<Integer, LazyMap<Integer, Boolean>>(), factory2);
+
+    assertFalse(innerMap.get(1));
+    assertFalse(innerMap.get(500));
+
+    assertFalse(outerMap.get(0).get(1));
+    assertFalse(outerMap.get(1).get(500));
+    assertFalse(outerMap.get(500).get(500));
+  }
 
   @Test
   public void notCreatedCellsAreDead() {

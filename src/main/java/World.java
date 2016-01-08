@@ -1,67 +1,47 @@
+import org.apache.commons.collections4.Factory;
+import org.apache.commons.collections4.map.LazyMap;
+
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public class World {
 
-  private Map<Integer, Map<Integer, Boolean>> world = new HashMap<>();
+  private Map<Integer, LazyMap<Integer, Boolean>> world;
+
+  public World() {
+    Factory<Boolean> factory1 = () -> Boolean.FALSE;
+    Factory<LazyMap<Integer, Boolean>> factory2 = () -> LazyMap.lazyMap(new HashMap<>(), factory1);
+    world = LazyMap.lazyMap(new HashMap<>(), factory2);
+  }
 
   public void create(int column, int row) {
-    Map<Integer, Boolean> columnMap = world.get(column) != null? world.get(column) : new HashMap<>();
-    world.put(column, columnMap != null ? columnMap : new HashMap<>());
-    columnMap.put(row, Boolean.TRUE);
+    world.get(column).put(row, Boolean.TRUE);
   }
 
   public void kill(int column, int row) {
-    Map<Integer, Boolean> columnMap = world.get(column) != null ? world.get(column) : new HashMap<>();
-    columnMap.put(row, Boolean.FALSE);
+    world.get(column).put(row, Boolean.FALSE);
   }
 
   public boolean isLiving(int column, int row) {
-    Map<Integer, Boolean> columnMap = world.get(column) != null ? world.get(column) : new HashMap<>();
-    Boolean cellLiving = columnMap.get(row);
+    Boolean cellLiving = world.get(column).get(row);
     return cellLiving != null && cellLiving;
   }
 
   public int neighbours(int column, int row) {
-    int neighbours = 0;
-    Map<Integer, Boolean> westColumn = world.get(column-1);
-    if(westColumn != null) {
-      Boolean northWest = westColumn.get(row - 1);
-      Boolean west = westColumn.get(row);
-      Boolean southWest = westColumn.get(row + 1);
-
-      if(northWest != null && northWest)
-        neighbours ++;
-      if(west != null && west)
-        neighbours ++;
-      if(southWest != null && southWest)
-        neighbours ++;
-    }
-
+    Map<Integer, Boolean> westColumn = world.get(column - 1);
     Map<Integer, Boolean> centerColumn = world.get(column);
-    if(centerColumn != null) {
-      Boolean north = centerColumn.get(row - 1);
-      Boolean south = centerColumn.get(row + 1);
+    Map<Integer, Boolean> eastColumn = world.get(column + 1);
 
-      if(north != null && north)
-        neighbours ++;
-      if(south != null && south)
-        neighbours ++;
-    }
-
-    Map<Integer, Boolean> eastColumn = world.get(column+1);
-    if(eastColumn != null) {
-      Boolean northEast = eastColumn.get(row - 1);
-      Boolean east = eastColumn.get(row);
-      Boolean southEast = eastColumn.get(row + 1);
-
-      if(northEast != null && northEast)
-        neighbours ++;
-      if(east != null && east)
-        neighbours ++;
-      if(southEast != null && southEast)
-        neighbours ++;
-    }
-    return neighbours;
+    BitSet bitSet = new BitSet();
+    bitSet.set(1, centerColumn.get(row - 1));
+    bitSet.set(2, eastColumn.get(row - 1));
+    bitSet.set(3, eastColumn.get(row));
+    bitSet.set(4, eastColumn.get(row + 1));
+    bitSet.set(5, centerColumn.get(row + 1));
+    bitSet.set(6, westColumn.get(row + 1));
+    bitSet.set(7, westColumn.get(row));
+    bitSet.set(8, westColumn.get(row - 1));
+    return bitSet.cardinality();
   }
 }
